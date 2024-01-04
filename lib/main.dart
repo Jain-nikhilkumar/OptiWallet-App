@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 import 'dart:ui'; // Import the UI library for image filtering
 import 'scan_page.dart'; // Import the newly created ScanPage
 
-void main() {
+void main() async{
   runApp(const DemoApp());
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 }
 
 class DemoApp extends StatelessWidget {
@@ -12,12 +17,12 @@ class DemoApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Optiwallet Demo',
+      title: 'OptiWallet App',
       theme: ThemeData(
         primarySwatch: Colors.blue, // Set your desired primary color
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: DemoHomePage(),
+      home: const DemoHomePage(),
     );
   }
 }
@@ -29,12 +34,12 @@ class DemoHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Optiwallet'),
+        title: const Text('OptiWallet'),
       ),
       drawer: Drawer(
         child: ListView(
           children: [
-            DrawerHeader(
+            const DrawerHeader(
               decoration: BoxDecoration(
                 color: Colors.black, // Black color for a memory-like strip
               ),
@@ -43,7 +48,7 @@ class DemoHomePage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Text(
-                    'Optiwallet',
+                    'OptiWallet',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 24.0,
@@ -84,7 +89,7 @@ class DemoHomePage extends StatelessWidget {
               borderRadius: BorderRadius.circular(15.0),
               child: Container(
                 height: 200.0,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   image: DecorationImage(
                     image: AssetImage('assets/background_image.jpg'),
                     fit: BoxFit.cover,
@@ -108,7 +113,7 @@ class DemoHomePage extends StatelessWidget {
                             alignment: Alignment.topLeft,
                             child: Text(
                               'Card ${index + 1}',
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 24.0,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white, // White color for the text
@@ -124,12 +129,12 @@ class DemoHomePage extends StatelessWidget {
                             width: 75.0,
                           ),
                         ),
-                        SizedBox(width: 10.0),
-                        SizedBox(height: 10.0),
-                        Align(
+                        const SizedBox(width: 10.0),
+                        const SizedBox(height: 10.0),
+                        const Align(
                           alignment: Alignment.bottomLeft,
                           child: Padding(
-                            padding: const EdgeInsets.only(left: 20.0, bottom: 10.0),
+                            padding: EdgeInsets.only(left: 20.0, bottom: 10.0),
                             child: Text(
                               'String 1',
                               style: TextStyle(
@@ -139,10 +144,10 @@ class DemoHomePage extends StatelessWidget {
                             ),
                           ),
                         ),
-                        Align(
+                        const Align(
                           alignment: Alignment.bottomLeft,
                           child: Padding(
-                            padding: const EdgeInsets.only(left: 20.0, bottom: 20.0),
+                            padding: EdgeInsets.only(left: 20.0, bottom: 20.0),
                             child: Text(
                               'String 2',
                               style: TextStyle(
