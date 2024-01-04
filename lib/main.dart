@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
 import 'dart:ui'; // Import the UI library for image filtering
-import 'scan_page.dart'; // Import the newly created ScanPage
+import 'package:OptiWallet/firebase_options.dart';
+import 'package:OptiWallet/scan_page.dart'; // Import the newly created ScanPage
+import 'package:OptiWallet/download.dart';
 
 void main() async{
   runApp(const DemoApp());
@@ -202,8 +203,10 @@ class DemoHomePage extends StatelessWidget {
             ),
             TextButton(
               onPressed: () {
-                Navigator.pop(context);
+                // Navigator.pop(context);
                 // Handle download action or any other logic here
+                //documentId: did:hid:namespace:.......................
+                getDocumentData(context,"did:hid:namespace:.......................");
               },
               child: const Text('Download'),
             ),
