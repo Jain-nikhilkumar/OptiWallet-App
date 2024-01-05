@@ -23,7 +23,7 @@ class DemoHomePage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.end,
-                children: const [
+                children: [
                   Text(
                     'OptiWallet',
                     style: TextStyle(
@@ -53,94 +53,23 @@ class DemoHomePage extends StatelessWidget {
           ],
         ),
       ),
-      body: ListView.builder(
-        itemCount: 5,
-        itemBuilder: (context, index) {
-          return Card(
-            elevation: 5.0,
-            margin: const EdgeInsets.all(10.0),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15.0),
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(15.0),
-              child: Container(
-                height: 200.0,
-                decoration: const BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage('assets/background_image.jpg'),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                child: Stack(
-                  children: [
-                    BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 0.0, sigmaY: 0.0),
-                      child: Container(
-                        color: Colors.black.withOpacity(0.0),
-                      ),
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(left: 10.0, top: 10.0),
-                          child: Align(
-                            alignment: Alignment.topLeft,
-                            child: Text(
-                              'Card ${index + 1}',
-                              style: const TextStyle(
-                                fontSize: 24.0,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 15.0),
-                          child: Image.asset(
-                            'assets/icon_image.png',
-                            height: 50.0,
-                            width: 75.0,
-                          ),
-                        ),
-                        const SizedBox(width: 10.0),
-                        const SizedBox(height: 10.0),
-                        const Align(
-                          alignment: Alignment.bottomLeft,
-                          child: Padding(
-                            padding: EdgeInsets.only(left: 20.0, bottom: 10.0),
-                            child: Text(
-                              'String 1',
-                              style: TextStyle(
-                                fontSize: 18.0,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const Align(
-                          alignment: Alignment.bottomLeft,
-                          child: Padding(
-                            padding: EdgeInsets.only(left: 20.0, bottom: 20.0),
-                            child: Text(
-                              'String 2',
-                              style: TextStyle(
-                                fontSize: 18.0,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
+      body: FutureBuilder<List<Map<String, dynamic>>>(
+        future: getAllJsonMaps(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else {
+            List<Map<String, dynamic>> jsonDataList = snapshot.data!;
+            return ListView.builder(
+              itemCount: jsonDataList.length,
+              itemBuilder: (context, index) {
+                Map<String, dynamic> jsonData = jsonDataList[index];
+                return buildCard(jsonData, index + 1);
+              },
+            );
+          }
         },
       ),
       floatingActionButton: FloatingActionButton(
@@ -149,6 +78,95 @@ class DemoHomePage extends StatelessWidget {
         },
         tooltip: 'Add',
         child: const Icon(Icons.add),
+      ),
+    );
+
+  }
+
+  Widget buildCard(Map<String, dynamic> jsonData, int index) {
+    return Card(
+      elevation: 5.0,
+      margin: const EdgeInsets.all(10.0),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15.0),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(15.0),
+        child: Container(
+          height: 200.0,
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/background_image.jpg'),
+              fit: BoxFit.cover,
+            ),
+          ),
+          child: Stack(
+            children: [
+              BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 0.0, sigmaY: 0.0),
+                child: Container(
+                  color: Colors.black.withOpacity(0.0),
+                ),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10.0, top: 10.0),
+                    child: Align(
+                      alignment: Alignment.topLeft,
+                      child: Text(
+                        'Card $index',
+                        style: const TextStyle(
+                          fontSize: 24.0,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 15.0),
+                    child: Image.asset(
+                      'assets/icon_image.png',
+                      height: 50.0,
+                      width: 75.0,
+                    ),
+                  ),
+                  const SizedBox(width: 10.0),
+                  const SizedBox(height: 10.0),
+                  Align(
+                    alignment: Alignment.bottomLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 20.0, bottom: 10.0),
+                      child: Text(
+                        jsonData['String1'] ?? '',
+                        style: const TextStyle(
+                          fontSize: 18.0,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.bottomLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 20.0, bottom: 20.0),
+                      child: Text(
+                        jsonData['String2'] ?? '',
+                        style: const TextStyle(
+                          fontSize: 18.0,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

@@ -90,3 +90,44 @@ void showToast(String message, {bool isError = false}) {
     fontSize: 16.0,
   );
 }
+
+Future<List<Map<String, dynamic>>> getAllJsonMaps() async {
+  try {
+    // Get the application's local storage directory
+    Directory directory = await getApplicationDocumentsDirectory();
+
+    // List all files in the directory
+    List<FileSystemEntity> files = directory.listSync();
+
+    // Filter out only JSON files
+    List<Map<String, dynamic>> jsonMaps = [];
+
+    for (var file in files) {
+      if (file is File && file.path.endsWith('.json')) {
+        // Convert each JSON file to a map
+        Map<String, dynamic> jsonMap = await convertJsonFileToMap(file);
+        jsonMaps.add(jsonMap);
+      }
+    }
+
+    return jsonMaps;
+  } catch (e) {
+    print('Error getting and converting JSON files to maps: $e');
+    return [];
+  }
+}
+
+Future<Map<String, dynamic>> convertJsonFileToMap(File jsonFile) async {
+  try {
+    // Read the content of the JSON file
+    String jsonContent = await jsonFile.readAsString();
+
+    // Parse the JSON content into a map
+    Map<String, dynamic> jsonMap = jsonDecode(jsonContent);
+
+    return jsonMap;
+  } catch (e) {
+    print('Error converting JSON file to map: $e');
+    return {};
+  }
+}
