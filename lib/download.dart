@@ -1,34 +1,36 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 Future<Map<String, dynamic>> getDocumentData(BuildContext context, String documentId) async {
   try {
-    // Store the context before entering the async function
+    var status = await Permission.storage.status;
+    if (!status.isGranted) {
+      var result = await Permission.storage.request();
+      if (result != PermissionStatus.granted) {
+        print('Storage permission not granted');
+        return {};
+      }
+    }
+
     BuildContext localContext = context;
 
-    // Reference to the Firestore collection
     CollectionReference<Map<String, dynamic>> collection =
     FirebaseFirestore.instance.collection('DID');
 
-    // Reference to the specific document
     DocumentSnapshot<Map<String, dynamic>> documentSnapshot =
     await collection.doc(documentId).get();
 
-    // Check if the document exists
     if (documentSnapshot.exists) {
-      // Access the data in the document
       Map<String, dynamic> data = documentSnapshot.data()!;
-
-      // Save data as a JSON file
       await saveDataAsJson(data, documentId);
-
+      showToast('Data saved successfully');
       return data;
     } else {
-      // Display a dialogue box using the locally stored context
       showDialog(
         context: localContext,
         builder: (BuildContext context) {
@@ -38,7 +40,7 @@ Future<Map<String, dynamic>> getDocumentData(BuildContext context, String docume
             actions: <Widget>[
               TextButton(
                 onPressed: () {
-                  Navigator.of(context).pop(); // Close the dialogue box
+                  Navigator.of(context).pop();
                 },
                 child: Text('OK'),
               ),
@@ -48,30 +50,43 @@ Future<Map<String, dynamic>> getDocumentData(BuildContext context, String docume
       );
 
       print('Document does not exist');
-      return {}; // or handle accordingly based on your use case
+      return {};
     }
   } catch (e) {
     print('Error fetching document: $e');
-    return {}; // or handle accordingly based on your use case
+    showToast('Error fetching document: $e', isError: true);
+    return {};
   }
 }
 
 Future<void> saveDataAsJson(Map<String, dynamic> data, String documentId) async {
   try {
-    // Get the application's local storage directory
-    Directory directory = await getApplicationDocumentsDirectory();
+    var status = await Permission.storage.status;
+    if (!status.isGranted) {
+      print('Storage permission not granted');
+      return;
+    }
 
-    // Create a new file in the local storage directory
-    File file = File('${directory.path}/$documentId.json');
-
-    // Convert the data to JSON format
+    Directory? directory = await getExternalStorageDirectory();
+    File file = File('${directory?.path}/$documentId.json');
     String jsonData = jsonEncode(data);
-
-    // Write the JSON data to the file
     await file.writeAsString(jsonData);
 
     print('Data saved as JSON file: ${file.path}');
   } catch (e) {
     print('Error saving data as JSON: $e');
+    showToast('Error saving data as JSON: $e', isError: true);
   }
+}
+
+void showToast(String message, {bool isError = false}) {
+  Fluttertoast.showToast(
+    msg: message,
+    toastLength: Toast.LENGTH_SHORT,
+    gravity: ToastGravity.BOTTOM,
+    timeInSecForIosWeb: 1,
+    backgroundColor: isError ? Colors.white : Colors.white,
+    textColor: Colors.black,
+    fontSize: 16.0,
+  );
 }

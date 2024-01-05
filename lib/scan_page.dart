@@ -12,32 +12,34 @@ class ScanPage extends StatefulWidget {
 class _ScanPageState extends State<ScanPage> {
   final GlobalKey _qrKey = GlobalKey(debugLabel: 'QR');
   late QRViewController _controller;
-  bool _scanned = false;
   String _extractedText = '';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Scan QR Code'),
+        title: const Text('Scan QR Code'),
       ),
       body: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Expanded(
+          Container(
+            margin: const EdgeInsets.only( top:30.0,left: 15.0 ,right:15.0 ),
+            height: 400.0, // Adjust the height as needed
             child: QRView(
               key: _qrKey,
               onQRViewCreated: _onQRViewCreated,
             ),
           ),
-          SizedBox(height: 20.0),
-          Text(
-            'Extracted Text: $_extractedText',
-            style: TextStyle(fontSize: 16.0),
-          ),
-          SizedBox(height: 20.0),
-          ElevatedButton(
-            onPressed: _scanned ? _handleVerify : null,
-            child: Text('Verify'),
+          const SizedBox(height: 20.0),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              'Extracted Text: $_extractedText',
+              style: const TextStyle(fontSize: 16.0),
+              textAlign: TextAlign.center,
+            ),
           ),
         ],
       ),
@@ -52,31 +54,8 @@ class _ScanPageState extends State<ScanPage> {
     _controller.scannedDataStream.listen((scanData) {
       setState(() {
         _extractedText = scanData.code!;
-        _scanned = true;
       });
     });
-  }
-
-  void _handleVerify() {
-    // Handle verification logic here
-    // For example, show a dialog with the extracted text
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Verification Result'),
-          content: Text('Extracted Text: $_extractedText'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   @override
