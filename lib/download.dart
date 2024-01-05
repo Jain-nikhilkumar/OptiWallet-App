@@ -35,14 +35,14 @@ Future<Map<String, dynamic>> getDocumentData(BuildContext context, String docume
         context: localContext,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Document Not Found'),
+            title: const Text('Document Not Found'),
             content: Text('The document with ID $documentId does not exist.'),
             actions: <Widget>[
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: Text('OK'),
+                child: const Text('OK'),
               ),
             ],
           );
@@ -94,15 +94,15 @@ void showToast(String message, {bool isError = false}) {
 Future<List<Map<String, dynamic>>> getAllJsonMaps() async {
   try {
     // Get the application's local storage directory
-    Directory directory = await getApplicationDocumentsDirectory();
+    Directory? directory = await getExternalStorageDirectory();
 
     // List all files in the directory
-    List<FileSystemEntity> files = directory.listSync();
+    List<FileSystemEntity>? files = directory?.listSync();
 
     // Filter out only JSON files
     List<Map<String, dynamic>> jsonMaps = [];
 
-    for (var file in files) {
+    for (var file in files!) {
       if (file is File && file.path.endsWith('.json')) {
         // Convert each JSON file to a map
         Map<String, dynamic> jsonMap = await convertJsonFileToMap(file);

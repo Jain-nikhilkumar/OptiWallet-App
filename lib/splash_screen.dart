@@ -8,7 +8,7 @@ class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Use Future.delayed to navigate to the login page after a specified duration
-    Future.delayed(Duration(seconds: 4), () {
+    Future.delayed(const Duration(seconds: 4), () {
       // Replace '/login' with the actual route for your login page
       Navigator.pushReplacementNamed(context, '/login');
     });

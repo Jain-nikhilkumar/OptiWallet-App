@@ -1,10 +1,7 @@
 // main.dart
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'dart:ui';
 import 'package:OptiWallet/firebase_options.dart';
-import 'package:OptiWallet/scan_page.dart';
-import 'package:OptiWallet/download.dart';
 import 'package:OptiWallet/login_page.dart';
 import 'package:OptiWallet/demo_home_page.dart';
 import 'package:OptiWallet/splash_screen.dart'; // Import the SplashScreen file
@@ -29,7 +26,7 @@ class DemoApp extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       // Use SplashScreen as the initial screen
-      home: SplashScreen(),
+      home: const SplashScreen(),
       routes: {
         '/login': (context) => const LoginPage(), // Add route for LoginPage
         '/home': (context) => const DemoHomePage(),
