@@ -5,7 +5,7 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
-import 'package:OptiWallet/demo_home_page.dart';
+import 'package:OptiWallet/pages/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -13,7 +13,7 @@ void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
    // await tester.pumpWidget(const MyApp());
-    await tester.pumpWidget(const DemoHomePage()); // Update with the actual class name\\
+    await tester.pumpWidget(const HomePage()); // Update with the actual class name\\
   //  await tester.pumpWidget(const DemoApp()); // Update with the correct class name
 
 

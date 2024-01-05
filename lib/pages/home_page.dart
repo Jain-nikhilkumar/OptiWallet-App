@@ -1,11 +1,11 @@
-// demo_home_page.dart
+// home_page.dart
 import 'package:flutter/material.dart';
 import 'dart:ui';
-import 'package:OptiWallet/scan_page.dart';
+import 'package:OptiWallet/pages/scan_page.dart';
 import 'package:OptiWallet/download.dart';
 
-class DemoHomePage extends StatelessWidget {
-  const DemoHomePage({Key? key}) : super(key: key);
+class HomePage extends StatelessWidget {
+  const HomePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

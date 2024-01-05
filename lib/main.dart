@@ -2,20 +2,20 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:OptiWallet/firebase_options.dart';
-import 'package:OptiWallet/login_page.dart';
-import 'package:OptiWallet/demo_home_page.dart';
-import 'package:OptiWallet/splash_screen.dart'; // Import the SplashScreen file
+import 'package:OptiWallet/pages/login_page.dart';
+import 'package:OptiWallet/pages/home_page.dart';
+import 'package:OptiWallet/pages/splash_screen.dart'; // Import the SplashScreen file
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const DemoApp());
+  runApp(const MainApp());
 }
 
-class DemoApp extends StatelessWidget {
-  const DemoApp({Key? key}) : super(key: key);
+class MainApp extends StatelessWidget {
+  const MainApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +29,7 @@ class DemoApp extends StatelessWidget {
       home: const SplashScreen(),
       routes: {
         '/login': (context) => const LoginPage(), // Add route for LoginPage
-        '/home': (context) => const DemoHomePage(),
+        '/home': (context) => const HomePage(),
       },
     );
   }
