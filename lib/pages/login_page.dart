@@ -1,6 +1,5 @@
-// login_page.dart
 import 'package:flutter/material.dart';
-
+import 'package:video_player/video_player.dart';
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
 
@@ -18,15 +17,22 @@ class _LoginPageState extends State<LoginPage> {
       appBar: AppBar(
         title: const Text('Login'),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Image.asset(
+              'assets/login_logo2.png', // Replace with your image asset path
+              height: 300.0,
+              width: 250.0,
+            ),
+            const SizedBox(height: 32.0),
             TextField(
               controller: _usernameController,
               decoration: const InputDecoration(
                 labelText: 'Username',
+                border: OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 16.0),
@@ -35,6 +41,7 @@ class _LoginPageState extends State<LoginPage> {
               obscureText: true,
               decoration: const InputDecoration(
                 labelText: 'Password',
+                border: OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 32.0),

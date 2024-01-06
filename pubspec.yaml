@@ -38,6 +38,7 @@ dependencies:
   firebase_analytics: ^10.8.0
   qr_code_scanner: 1.0.1
   fluttertoast: ^8.0.7
+  video_player: ^2.5.0
   permission_handler: ^11.1.0
   get_it: ^7.6.4
   http: ^1.1.2
@@ -68,7 +69,11 @@ flutter:
     - assets/background_image.jpg
     - assets/icon_image.png
     - assets/splash_screen.jpg
-
+    - assets/login_logo.png
+    - assets/login_logo2.png
+    - assets/background_image2.png
+    - assets/login_logo.jpg
+    - assets/OptiWallet.mp4
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.

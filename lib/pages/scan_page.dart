@@ -1,4 +1,3 @@
-// scan_page.dart
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
@@ -25,11 +24,18 @@ class _ScanPageState extends State<ScanPage> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Container(
-            margin: const EdgeInsets.only( top:30.0,left: 15.0 ,right:15.0 ),
-            height: 400.0, // Adjust the height as needed
+            margin: const EdgeInsets.fromLTRB(15.0, 30.0, 15.0, 0.0),
+            height: 400.0,
             child: QRView(
               key: _qrKey,
               onQRViewCreated: _onQRViewCreated,
+              overlay: QrScannerOverlayShape(
+                borderColor: Colors.green,
+                borderRadius: 10,
+                borderLength: 30,
+                borderWidth: 10,
+                cutOutSize: 300,
+              ),
             ),
           ),
           const SizedBox(height: 20.0),

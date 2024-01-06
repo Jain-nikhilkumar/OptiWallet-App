@@ -1,17 +1,61 @@
-// home_page.dart
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:OptiWallet/pages/scan_page.dart';
 import 'package:OptiWallet/download.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
+
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  late List<Map<String, dynamic>> jsonDataList;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    try {
+      List<Map<String, dynamic>> data = await getAllJsonMaps();
+      setState(() {
+        jsonDataList = data;
+      });
+    } catch (e) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Error'),
+            content: Text('An error occurred: $e'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+  Future<void> _refreshData() async {
+    await _loadData();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('OptiWallet'),
+        centerTitle: true,
       ),
       drawer: Drawer(
         child: ListView(
@@ -53,25 +97,7 @@ class HomePage extends StatelessWidget {
           ],
         ),
       ),
-      body: FutureBuilder<List<Map<String, dynamic>>>(
-        future: getAllJsonMaps(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else {
-            List<Map<String, dynamic>> jsonDataList = snapshot.data!;
-            return ListView.builder(
-              itemCount: jsonDataList.length,
-              itemBuilder: (context, index) {
-                Map<String, dynamic> jsonData = jsonDataList[index];
-                return buildCard(jsonData, index + 1);
-              },
-            );
-          }
-        },
-      ),
+      body: _buildBody(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           _showAddDialog(context);
@@ -80,10 +106,29 @@ class HomePage extends StatelessWidget {
         child: const Icon(Icons.add),
       ),
     );
+  }
 
+  Widget _buildBody() {
+    return RefreshIndicator(
+      onRefresh: _refreshData,
+      child: jsonDataList == null
+          ? const Center(child: CircularProgressIndicator())
+          : jsonDataList.isEmpty
+          ? const Center(child: Text('No data available.'))
+          : ListView.builder(
+        itemCount: jsonDataList.length,
+        itemBuilder: (context, index) {
+          Map<String, dynamic> jsonData = jsonDataList[index];
+          return buildCard(jsonData, index + 1);
+        },
+      ),
+    );
   }
 
   Widget buildCard(Map<String, dynamic> jsonData, int index) {
+    // Your existing buildCard method
+    // ...
+
     return Card(
       elevation: 5.0,
       margin: const EdgeInsets.all(10.0),
@@ -96,24 +141,18 @@ class HomePage extends StatelessWidget {
           height: 200.0,
           decoration: const BoxDecoration(
             image: DecorationImage(
-              image: AssetImage('assets/background_image.jpg'),
+              image: AssetImage('assets/background_image2.png'),
               fit: BoxFit.cover,
             ),
           ),
           child: Stack(
             children: [
-              BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 0.0, sigmaY: 0.0),
-                child: Container(
-                  color: Colors.black.withOpacity(0.0),
-                ),
-              ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(left: 10.0, top: 10.0),
+                    padding: const EdgeInsets.only(left: 10.0, top: 30.0),
                     child: Align(
                       alignment: Alignment.topLeft,
                       child: Text(
@@ -124,14 +163,6 @@ class HomePage extends StatelessWidget {
                           color: Colors.white,
                         ),
                       ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 15.0),
-                    child: Image.asset(
-                      'assets/icon_image.png',
-                      height: 50.0,
-                      width: 75.0,
                     ),
                   ),
                   const SizedBox(width: 10.0),
@@ -197,9 +228,7 @@ class HomePage extends StatelessWidget {
             ),
             TextButton(
               onPressed: () {
-                // Handle download action or any other logic here
-                // documentId: did:hid:namespace:.......................
-                getDocumentData(context, "did:hid:namespace:.......................");
+                _downloadData();
               },
               child: const Text('Download'),
             ),
@@ -207,5 +236,31 @@ class HomePage extends StatelessWidget {
         );
       },
     );
+  }
+
+  Future<void> _downloadData() async {
+    try {
+      // Handle download action or any other logic here
+      await getDocumentData(context, "did:hid:namespace:.......................");
+      _loadData(); // Refresh the data after download
+    } catch (e) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Error'),
+            content: Text('An error occurred during download: $e'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 }
