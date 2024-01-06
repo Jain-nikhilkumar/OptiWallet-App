@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:ui';
 import 'package:OptiWallet/pages/scan_page.dart';
 import 'package:OptiWallet/download.dart';
 
@@ -26,23 +25,7 @@ class _HomePageState extends State<HomePage> {
         jsonDataList = data;
       });
     } catch (e) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('Error'),
-            content: Text('An error occurred: $e'),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text('OK'),
-              ),
-            ],
-          );
-        },
-      );
+      _showDialogBox(title: 'Error', content: 'An error occurred: $e');
     }
   }
 
@@ -203,17 +186,20 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _showAddDialog(BuildContext context) {
+    TextEditingController textEditingController = TextEditingController();
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Add New Item'),
-          content: const Column(
+          content: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
-                decoration: InputDecoration(
+                controller: textEditingController,
+                decoration: const InputDecoration(
                   labelText: 'Enter text',
                 ),
               ),
@@ -228,7 +214,10 @@ class _HomePageState extends State<HomePage> {
             ),
             TextButton(
               onPressed: () {
-                _downloadData();
+                String enteredText = textEditingController.text;
+                // Use the enteredText as needed, for example, call _downloadData
+                _downloadData(enteredText);
+                Navigator.pop(context);
               },
               child: const Text('Download'),
             ),
@@ -238,29 +227,35 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Future<void> _downloadData() async {
+
+  Future<void> _downloadData(String enteredText) async {
     try {
       // Handle download action or any other logic here
-      await getDocumentData(context, "did:hid:namespace:.......................");
+      // await getDocumentData(context,"did:hid:namespace:.......................");
+      await getDocumentData(context, "vc:hid:testnet:zDm9qhMncSGnudGYquzz3mGfV8yahS4yKcWmeWTb5pcxe",collectionId: "Credentials");
       _loadData(); // Refresh the data after download
     } catch (e) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('Error'),
-            content: Text('An error occurred during download: $e'),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text('OK'),
-              ),
-            ],
-          );
-        },
-      );
+      _showDialogBox(title: 'Error', content: 'An error occurred during download: $e');
     }
+  }
+
+  void _showDialogBox({String title="Title", String content="Content"}){
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(content),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
   }
 }

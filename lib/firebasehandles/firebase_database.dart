@@ -57,4 +57,15 @@ class FirebaseDbOperations {
       print('Error deleting data: $e');
     }
   }
+
+  Future<bool> addKeyValuePair(String path, String key, dynamic value) async {
+    try {
+      await _databaseReference.child(path).child(key).set(value);
+      print('Key-value pair added successfully');
+      return true;
+    } catch (e) {
+      print('Error adding key-value pair: $e');
+      return false;
+    }
+  }
 }
