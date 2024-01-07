@@ -102,13 +102,13 @@ class _HomePageState extends State<HomePage> {
         itemCount: jsonDataList.length,
         itemBuilder: (context, index) {
           Map<String, dynamic> jsonData = jsonDataList[index];
-          return buildCard(jsonData, index + 1);
+          return buildCard(jsonData);
         },
       ),
     );
   }
 
-  Widget buildCard(Map<String, dynamic> jsonData, int index) {
+  Widget buildCard(Map<String, dynamic> jsonData) {
     // Your existing buildCard method
     // ...
 
@@ -139,7 +139,7 @@ class _HomePageState extends State<HomePage> {
                     child: Align(
                       alignment: Alignment.topLeft,
                       child: Text(
-                        'Card $index',
+                        jsonData["credentialDocument"]["id"] ?? 'Null id',
                         style: const TextStyle(
                           fontSize: 24.0,
                           fontWeight: FontWeight.bold,
@@ -155,7 +155,7 @@ class _HomePageState extends State<HomePage> {
                     child: Padding(
                       padding: const EdgeInsets.only(left: 20.0, bottom: 10.0),
                       child: Text(
-                        jsonData['String1'] ?? '',
+                        jsonData['credentialStatus']['expirationDate'] ?? 'Null Expiry',
                         style: const TextStyle(
                           fontSize: 18.0,
                           color: Colors.white,
@@ -168,7 +168,7 @@ class _HomePageState extends State<HomePage> {
                     child: Padding(
                       padding: const EdgeInsets.only(left: 20.0, bottom: 20.0),
                       child: Text(
-                        jsonData['String2'] ?? '',
+                        jsonData['credentialDocument']['type'].join(", ") ?? 'Null type values',
                         style: const TextStyle(
                           fontSize: 18.0,
                           color: Colors.white,

@@ -131,7 +131,7 @@ Future<Map<String, dynamic>> convertJsonFileToMap(File jsonFile) async {
   }
 }
 
-Future<List<Map<String, dynamic>>> getFilteredJsonFiles(List<String> requiredTypes) async {
+Future<List<Map<String, dynamic>>> getFilteredJsonFiles(List<dynamic> requiredTypes) async {
   try {
     Directory? directory = await getExternalStorageDirectory();
     List<FileSystemEntity>? files = directory?.listSync();
@@ -153,14 +153,6 @@ Future<List<Map<String, dynamic>>> getFilteredJsonFiles(List<String> requiredTyp
               credentialDocuments["type"].containsAll(requiredTypes)) {
             filteredJsonFiles.add(credentialDocuments);
           }
-          // for (var document in credentialDocuments) {
-          //   if (document is Map<String, dynamic> &&
-          //       document.containsKey("type") &&
-          //       document["type"] is List &&
-          //       document["type"].containsAll(requiredTypes)) {
-          //     filteredJsonFiles.add(document);
-          //   }
-          // }
         }
       }
     }
