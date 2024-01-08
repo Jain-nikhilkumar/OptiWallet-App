@@ -1,4 +1,5 @@
 // main.dart
+import 'package:OptiWallet/pages/scan_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:OptiWallet/firebase_options.dart';
@@ -12,6 +13,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   runApp(const MainApp());
+
 }
 
 class MainApp extends StatelessWidget {
@@ -26,7 +28,8 @@ class MainApp extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       // Use SplashScreen as the initial screen
-      home: const SplashScreen(),
+      // home: const SplashScreen(),
+      home: const ScanPage(),
       routes: {
         '/login': (context) => const LoginPage(), // Add route for LoginPage
         '/home': (context) => const HomePage(),

@@ -43,7 +43,7 @@ class _SplashScreenState extends State<SplashScreen> {
           aspectRatio: _videoController.value.aspectRatio,
           child: VideoPlayer(_videoController),
         )
-            : CircularProgressIndicator(),
+            : const CircularProgressIndicator(),
       ),
     );
   }

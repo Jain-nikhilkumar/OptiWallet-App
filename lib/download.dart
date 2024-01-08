@@ -142,15 +142,21 @@ Future<List<Map<String, dynamic>>> getFilteredJsonFiles(List<dynamic> requiredTy
       if (file is File && file.path.endsWith('.json')) {
         String fileContent = await file.readAsString();
         Map<String, dynamic> jsonData = jsonDecode(fileContent);
+        print("above the credential ");
+        if (jsonData.containsKey("credentialDocument") &&
+            jsonData["credentialDocument"].isNotEmpty) {
+          var credentialDocuments = jsonData["credentialDocument"];
 
-        if (jsonData.containsKey("credentialDocuments") &&
-            jsonData["credentialDocuments"].isNotEmpty) {
-          var credentialDocuments = jsonData["credentialDocuments"];
+          print("parameter: $requiredTypes");
+          print("credential: ${ credentialDocuments["type"]}");
+          print("match: ${ credentialDocuments["type"].containsAll(requiredTypes)}");
 
+          print("Below Verfired");
           if (credentialDocuments is Map<String, dynamic> &&
               credentialDocuments.containsKey("type") &&
               credentialDocuments["type"] is List &&
               credentialDocuments["type"].containsAll(requiredTypes)) {
+            print("$credentialDocuments");
             filteredJsonFiles.add(credentialDocuments);
           }
         }

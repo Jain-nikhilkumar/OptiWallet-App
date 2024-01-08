@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
 
@@ -73,6 +72,6 @@ class _LoginPageState extends State<LoginPage> {
 
   bool isValidCredentials(String username, String password) {
     // Replace this with your actual authentication logic
-    return username == 'demo' && password == 'password';
+    return username == 'admin' && password == '1234';
   }
 }

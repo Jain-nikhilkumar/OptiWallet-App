@@ -134,7 +134,7 @@ class ApiService {
 
       // Check if authentication was successful
       if (authToken.isNotEmpty) {
-        headers['Authorization'] = 'Bearer ${authToken}';
+        headers['Authorization'] = 'Bearer $authToken';
 
         // Now, proceed with the main request
         final response = await http.post(
