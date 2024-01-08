@@ -9,7 +9,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 typedef DownloadCallback = void Function(Map<String, dynamic> jsonData);
 
-void showToast(String message, {Color backgroundColor = Colors.white, Color textColor = Colors.black}) {
+void _showToast(String message, {Color backgroundColor = Colors.white, Color textColor = Colors.black}) {
   Fluttertoast.showToast(
     msg: message,
     toastLength: Toast.LENGTH_SHORT,
@@ -32,7 +32,7 @@ Future<Map<String, dynamic>> getDocumentData(
     if (!status.isGranted) {
       var result = await Permission.storage.request();
       if (result != PermissionStatus.granted) {
-        showToast('Storage permission not granted', backgroundColor: Colors.redAccent, textColor: Colors.white);
+        _showToast('Storage permission not granted', backgroundColor: Colors.redAccent, textColor: Colors.white);
         return {};
       }
     }
@@ -46,7 +46,7 @@ Future<Map<String, dynamic>> getDocumentData(
     if (documentSnapshot.exists) {
       Map<String, dynamic> data = documentSnapshot.data()!;
       await saveDataAsJson(data, documentId);
-      showToast('Data saved successfully');
+      _showToast('Data saved successfully');
 
       // Notify the caller (UI) about the download completion
       if (downloadCallback != null) {
@@ -76,7 +76,7 @@ Future<Map<String, dynamic>> getDocumentData(
       return {};
     }
   } catch (e) {
-    showToast('Error fetching document: $e');
+    _showToast('Error fetching document: $e');
     return {};
   }
 }
@@ -85,7 +85,7 @@ Future<void> saveDataAsJson(Map<String, dynamic> data, String documentId) async 
   try {
     var status = await Permission.storage.status;
     if (!status.isGranted) {
-      showToast('Storage permission not granted');
+      _showToast('Storage permission not granted');
       return;
     }
 
@@ -94,9 +94,9 @@ Future<void> saveDataAsJson(Map<String, dynamic> data, String documentId) async 
     String jsonData = jsonEncode(data);
     await file.writeAsString(jsonData);
 
-    showToast('Data saved as JSON file: ${file.path}');
+    _showToast('Data saved as JSON file: ${file.path}');
   } catch (e) {
-    showToast('Error saving data as JSON: $e');
+    _showToast('Error saving data as JSON: $e');
   }
 }
 
@@ -115,7 +115,7 @@ Future<List<Map<String, dynamic>>> getAllJsonMaps() async {
 
     return jsonMaps;
   } catch (e) {
-    showToast('Error getting and converting JSON files to maps: $e');
+    _showToast('Error getting and converting JSON files to maps: $e');
     return [];
   }
 }
@@ -126,9 +126,18 @@ Future<Map<String, dynamic>> convertJsonFileToMap(File jsonFile) async {
     Map<String, dynamic> jsonMap = jsonDecode(jsonContent);
     return jsonMap;
   } catch (e) {
-    showToast('Error converting JSON file to map: $e');
+    _showToast('Error converting JSON file to map: $e');
     return {};
   }
+}
+
+bool _isSubset(List<dynamic> sublist, List<dynamic> list) {
+  // Trim whitespace from left and right of each element in both lists
+  List<String> trimmedList1 = sublist.map((e) => e.toString().trim()).toList();
+  List<String> trimmedList2 = list.map((e) => e.toString().trim()).toList();
+
+  // Check if every element in trimmedList1 is present in trimmedList2
+  return trimmedList1.every((element) => trimmedList2.contains(element));
 }
 
 Future<List<Map<String, dynamic>>> getFilteredJsonFiles(List<dynamic> requiredTypes) async {
@@ -142,22 +151,16 @@ Future<List<Map<String, dynamic>>> getFilteredJsonFiles(List<dynamic> requiredTy
       if (file is File && file.path.endsWith('.json')) {
         String fileContent = await file.readAsString();
         Map<String, dynamic> jsonData = jsonDecode(fileContent);
-        print("above the credential ");
         if (jsonData.containsKey("credentialDocument") &&
             jsonData["credentialDocument"].isNotEmpty) {
           var credentialDocuments = jsonData["credentialDocument"];
 
-          print("parameter: $requiredTypes");
-          print("credential: ${ credentialDocuments["type"]}");
-          print("match: ${ credentialDocuments["type"].containsAll(requiredTypes)}");
+          bool matchEvery = _isSubset(requiredTypes, credentialDocuments["type"]);
+          // _showToast("match: $matchEvery");
 
-          print("Below Verfired");
-          if (credentialDocuments is Map<String, dynamic> &&
-              credentialDocuments.containsKey("type") &&
-              credentialDocuments["type"] is List &&
-              credentialDocuments["type"].containsAll(requiredTypes)) {
-            print("$credentialDocuments");
-            filteredJsonFiles.add(credentialDocuments);
+          if (matchEvery) {
+            // print("Printing Credentials: $credentialDocuments");
+            filteredJsonFiles.add(jsonData);
           }
         }
       }

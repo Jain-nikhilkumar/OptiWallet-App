@@ -1,8 +1,7 @@
 import 'dart:convert';
 
 import 'package:OptiWallet/download.dart';
-import 'package:OptiWallet/firebasehandles/firebase_database.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:OptiWallet/firebasehandles/firestore_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
@@ -15,6 +14,7 @@ class ScanPage extends StatefulWidget {
 
 class _ScanPageState extends State<ScanPage> {
   final GlobalKey _qrKey = GlobalKey(debugLabel: 'QR');
+  bool _isQRCodeFound = false;
   late QRViewController _controller;
   // String _extractedText = '';
   late Map<String, dynamic> _extractedText;
@@ -34,7 +34,12 @@ class _ScanPageState extends State<ScanPage> {
             height: 400.0,
             child: QRView(
               key: _qrKey,
-              onQRViewCreated: _onQRViewCreated,
+              onQRViewCreated: (controller) {
+                if (!_isQRCodeFound) {
+                  _onQRViewCreated(controller);
+                  _isQRCodeFound = true;
+                }
+              },
               overlay: QrScannerOverlayShape(
                 borderColor: Colors.green,
                 borderRadius: 10,
@@ -69,28 +74,52 @@ class _ScanPageState extends State<ScanPage> {
       // Call the getFilteredJsonFiles function with the extracted text
       List<Map<String, dynamic>> filteredJsonFiles = await getFilteredJsonFiles(extractedText["type"]);
 
-      // Handle the filteredJsonFiles as needed
-      // print('Filtered JSON Files: $filteredJsonFiles');
-      _showDialogBox(title: 'Filtered JSON Files', content: 'Data: $filteredJsonFiles');
-
       if(filteredJsonFiles.isNotEmpty){
         Map<String, dynamic> vc = filteredJsonFiles.first;
-        if(vc.containsKey("credentialDocuments") && vc["credentialDocuments"].isNotEmpty){
-          var credentialDocuments = vc["credentialDocuments"];
-          if(credentialDocuments is Map<String, dynamic> &&
-              credentialDocuments.containsKey("did") &&
-              credentialDocuments["id"].toString().isNotEmpty) {
-              FirebaseDbOperations firebaseDbOperations = FirebaseDbOperations(Firebase.app());
-              await firebaseDbOperations.addKeyValuePair('Tokens/${extractedText['']}', 'VCId', credentialDocuments["id"].toString());
-              await firebaseDbOperations.addKeyValuePair('Tokens/${extractedText['']}', 'verified', true);
+        if(vc.containsKey("credentialDocument") && vc["credentialDocument"].isNotEmpty){
+          var credentialDocument = vc["credentialDocument"];
+          if(credentialDocument is Map<String, dynamic> &&
+              credentialDocument.containsKey("id") &&
+              credentialDocument["id"].toString().isNotEmpty) {
+            print("VC : ${credentialDocument['id'].toString()}");
+            String collection = 'Tokens';
+            String documentId = extractedText['token'];
+            Map<String, dynamic> data = {
+              'VCId': credentialDocument['id'].toString(),
+              'verified': true
+            };
+            FirestoreHandler firestoreHandler = FirestoreHandler();
+            bool updateDocument = await firestoreHandler.updateDocument(collection, documentId, data);
+            updateDocument ?
+            _showDialogBox(title: 'Verifying Identity', content: "Auth success ") :
+            _showDialogBox(title: 'Verifying Identity', content: "Couldn't Update") ;
+            firestoreHandler.closeFirestore();
+            return;
+            // FirebaseDbOperations firebaseDbOperations = FirebaseDbOperations(Firebase.app());
+            // await firebaseDbOperations.addKeyValuePair('Tokens/${extractedText['']}', 'VCId', credentialDocuments["id"].toString());
+            // await firebaseDbOperations.addKeyValuePair('Tokens/${extractedText['']}', 'verified', true);
+          } else {
+            _showDialogBox(title: 'Verifying Identity', content: 'Cannot get VCId');
           }
+        } else{
+          _showDialogBox(title: 'Verifying Identity', content: 'Cannot get credentialDocument');
         }
       } else {
-        FirebaseDbOperations firebaseDbOperations = FirebaseDbOperations(Firebase.app());
-        await firebaseDbOperations.addKeyValuePair('/Tokens/${extractedText['token']}', 'VCId', 'Invalid Identity!');
-        await firebaseDbOperations.addKeyValuePair('/Tokens/${extractedText['token']}', 'verified', false);
-        _showDialogBox(title: 'Verifying Identity', content: "Invalid Identity!");
+        // FirebaseDbOperations firebaseDbOperations = FirebaseDbOperations(Firebase.app());
+        // await firebaseDbOperations.addKeyValuePair('/Tokens/${extractedText['token']}', 'VCId', 'Invalid Identity!');
+        // await firebaseDbOperations.addKeyValuePair('/Tokens/${extractedText['token']}', 'verified', false);
+        _showDialogBox(title: 'Verifying Identity', content: "You don't have required Identity !");
       }
+
+      String collection = 'Tokens';
+      String documentId = extractedText['token'];
+      Map<String, dynamic> data = {
+        'VCId': 'Invalid VC',
+        'verified': false
+      };
+      FirestoreHandler firestoreHandler = FirestoreHandler();
+      var updateDocument = await firestoreHandler.updateDocument(collection, documentId, data);
+      firestoreHandler.closeFirestore();
     } catch (e) {
       _showDialogBox(title: 'Error in onQRCodeDetected', content: 'Error fetching filtered JSON files: $e');
       // Handle errors or exceptions here
@@ -123,4 +152,5 @@ class _ScanPageState extends State<ScanPage> {
     _controller.dispose();
     super.dispose();
   }
+
 }

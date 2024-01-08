@@ -1,11 +1,10 @@
 // main.dart
-import 'package:OptiWallet/pages/scan_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:OptiWallet/firebase_options.dart';
 import 'package:OptiWallet/pages/login_page.dart';
 import 'package:OptiWallet/pages/home_page.dart';
-import 'package:OptiWallet/pages/splash_screen.dart'; // Import the SplashScreen file
+// Import the SplashScreen file
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,7 +28,7 @@ class MainApp extends StatelessWidget {
       ),
       // Use SplashScreen as the initial screen
       // home: const SplashScreen(),
-      home: const ScanPage(),
+      home: const HomePage(),
       routes: {
         '/login': (context) => const LoginPage(), // Add route for LoginPage
         '/home': (context) => const HomePage(),
