@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:OptiWallet/pages/scan_page.dart';
 import 'package:OptiWallet/download.dart';
+// ... (Your existing imports)
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -45,7 +46,7 @@ class _HomePageState extends State<HomePage> {
           children: [
             const DrawerHeader(
               decoration: BoxDecoration(
-                color: Colors.black,
+                color: Colors.grey,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -109,11 +110,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget buildCard(Map<String, dynamic> jsonData) {
-    // Your existing buildCard method
-    // ...
-
     return Card(
-      elevation: 5.0,
+      elevation: 30.0
+       , // Add a bit of shadow
       margin: const EdgeInsets.all(10.0),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15.0),
@@ -124,7 +123,7 @@ class _HomePageState extends State<HomePage> {
           height: 200.0,
           decoration: const BoxDecoration(
             image: DecorationImage(
-              image: AssetImage('assets/background_image2.png'),
+              image: AssetImage('assets/background_image.png'),
               fit: BoxFit.cover,
             ),
           ),
@@ -135,13 +134,17 @@ class _HomePageState extends State<HomePage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(left: 10.0, top: 30.0),
+                    padding: const EdgeInsets.only(left: 10.0, top: 26.0),
                     child: Align(
                       alignment: Alignment.topLeft,
                       child: Text(
-                        jsonData["credentialDocument"]["id"] ?? 'Null id',
+                        (jsonData["credentialDocument"]["id"] ?? 'Null id')
+                            .substring(0, 20) +
+                            (jsonData["credentialDocument"]["id"].length > 20
+                                ? '...'
+                                : ''),
                         style: const TextStyle(
-                          fontSize: 24.0,
+                          fontSize: 27.0,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
@@ -153,11 +156,13 @@ class _HomePageState extends State<HomePage> {
                   Align(
                     alignment: Alignment.bottomLeft,
                     child: Padding(
-                      padding: const EdgeInsets.only(left: 20.0, bottom: 10.0),
+                      padding: const EdgeInsets.only(left: 10.0, bottom: 10.0),
                       child: Text(
-                        jsonData['credentialStatus']['expirationDate'] ?? 'Null Expiry',
+                        jsonData['credentialDocument']['type'].join(",\n ") ??
+                            'Null type values',
                         style: const TextStyle(
-                          fontSize: 18.0,
+                          fontSize: 20.0,
+                          fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
                       ),
@@ -166,11 +171,12 @@ class _HomePageState extends State<HomePage> {
                   Align(
                     alignment: Alignment.bottomLeft,
                     child: Padding(
-                      padding: const EdgeInsets.only(left: 20.0, bottom: 20.0),
+                      padding: const EdgeInsets.only(left: 10.0, bottom: 7.0),
                       child: Text(
-                        jsonData['credentialDocument']['type'].join(", ") ?? 'Null type values',
+                        jsonData['credentialStatus']['expirationDate'] ??
+                            'Null Expiry',
                         style: const TextStyle(
-                          fontSize: 18.0,
+                          fontSize: 15.0,
                           color: Colors.white,
                         ),
                       ),
@@ -227,19 +233,22 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-
   Future<void> _downloadData(String enteredText) async {
     try {
       // Handle download action or any other logic here
       // await getDocumentData(context,"did:hid:namespace:.......................");
-      await getDocumentData(context, "vc:hid:testnet:zDm9qhMncSGnudGYquzz3mGfV8yahS4yKcWmeWTb5pcxe",collectionId: "Credentials");
+      await getDocumentData(
+          context,
+          "vc:hid:testnet:zDm9qhMncSGnudGYquzz3mGfV8yahS4yKcWmeWTb5pcxe",
+          collectionId: "Credentials");
       _loadData(); // Refresh the data after download
     } catch (e) {
-      _showDialogBox(title: 'Error', content: 'An error occurred during download: $e');
+      _showDialogBox(
+          title: 'Error', content: 'An error occurred during download: $e');
     }
   }
 
-  void _showDialogBox({String title="Title", String content="Content"}){
+  void _showDialogBox({String title = "Title", String content = "Content"}) {
     showDialog(
       context: context,
       builder: (BuildContext context) {

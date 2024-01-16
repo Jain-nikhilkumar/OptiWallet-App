@@ -150,7 +150,8 @@ class LoginPage extends StatelessWidget {
                           child: FloatingActionButton(
                             backgroundColor: Colors.green,
                             onPressed: () {
-                              // Implement your logic here
+                              // Implement your logic
+
                             },
                             child: const Icon(
                               Icons.arrow_forward,
