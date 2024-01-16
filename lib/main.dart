@@ -1,4 +1,5 @@
 // main.dart
+import 'package:OptiWallet/pages/card.dart';
 import 'package:OptiWallet/pages/login.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -29,7 +30,7 @@ class MainApp extends StatelessWidget {
       // Use SplashScreen as the initial screen
       // home: const SplashScreen(),
       // home: const HomePage(),
-      home: const LoginPage(),
+      home: const CardPage(),
       routes: {
         '/login': (context) => const LoginPage(), // Add route for LoginPage
         '/home': (context) => const HomePage(),

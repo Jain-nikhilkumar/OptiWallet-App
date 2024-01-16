@@ -28,6 +28,7 @@ dependencies:
   path_provider: ^2.1.1
   provider: ^6.1.1
   lottie: ^1.1.0 # Use the latest version available
+  flutter_svg: ^0.22.0
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -62,6 +63,8 @@ flutter:
     - assets/OptiWallet.mp4
     - assets/your_animation.json
     - assets/top_animation.json
+    - assets/card.png
+    - assets/wallet.svg
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
