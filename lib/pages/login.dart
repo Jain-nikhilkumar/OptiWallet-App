@@ -6,6 +6,9 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Container(
@@ -13,20 +16,20 @@ class LoginPage extends StatelessWidget {
           color: Colors.white,
           image: DecorationImage(
             image: AssetImage('assets/img.png'),
-            fit: BoxFit.fill,
+            fit: BoxFit.cover,
           ),
         ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Padding(
-              padding: const EdgeInsets.only(bottom: 15.0, top: 185.0),
+            Container(
+              padding: EdgeInsets.all(screenWidth * 0.1),
               child: Stack(
                 alignment: Alignment.center,
                 children: [
                   Container(
-                    width: 100.0,
-                    height: 100.0,
+                    width: screenWidth * 0.20,
+                    height: screenWidth * 0.20,
                     decoration: const BoxDecoration(
                       color: Colors.transparent,
                     ),
@@ -35,87 +38,84 @@ class LoginPage extends StatelessWidget {
                     alignment: Alignment.center,
                     child: Lottie.asset(
                       'assets/top_animation.json',
-                      width: 160.0,
-                      height: 160.0,
+                      width: screenWidth * 0.4,
+                      height: screenWidth * 0.4,
                     ),
                   ),
                 ],
               ),
             ),
-            Align(
-              alignment: Alignment.center,
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 10.0),
-                      child: SizedBox(
-                        width: double.infinity,
-                        height: 50.0,
-                        child: TextField(
-                          keyboardType: TextInputType.phone,
-                          style: const TextStyle(color: Colors.white),
-                          decoration: InputDecoration(
-                            labelText: 'Mobile Number',
-                            labelStyle: const TextStyle(color: Colors.white),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: Colors.white),
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: Colors.purpleAccent),
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                          ),
+            Container(
+              padding: EdgeInsets.all(screenWidth * 0.1),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: screenWidth * 0.8,
+                    height: screenHeight * 0.07,
+                    child: TextField(
+                      keyboardType: TextInputType.phone,
+                      style: const TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        labelText: 'Mobile Number',
+                        labelStyle: const TextStyle(color: Colors.white),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(color: Colors.white),
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(color: Colors.purpleAccent),
+                          borderRadius: BorderRadius.circular(10.0),
                         ),
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 10.0),
-                      child: Align(
-                        alignment: Alignment.centerRight,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            // Implement your login functionality here
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.purple,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30.0),
-                            ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: screenHeight * 0.02),
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          // Implement your login functionality here
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.purple,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30.0),
                           ),
-                          child: const Text(
-                            'Generate OTP',
-                            style: TextStyle(color: Colors.white),
-                          ),
+                        ),
+                        child: const Text(
+                          'Generate OTP',
+                          style: TextStyle(color: Colors.white),
                         ),
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 10.0),
-                      child: Column(
-                        children: [
-                          const Text(
-                            'Enter OTP',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16.0,
-                              // fontWeight: FontWeight.bold,
-                            ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: screenHeight * 0.00),
+                    child: Column(
+                      children: [
+                        const Text(
+                          'Enter OTP',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16.0,
                           ),
-                          const SizedBox(height: 8.0),
-                          SizedBox(
-                            width: double.infinity,
-                            height: 50.0,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: List.generate(
-                                4,
-                                    (index) => Container(
-                                  width: 50.0,
-                                  height: 50.0,
+                        ),
+                        const SizedBox(height: 5.0),
+                        SizedBox(
+                          width: screenWidth * 0.8,
+                          height: screenHeight * 0.07,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            // Adjusted the spacing between OTP input boxes
+                            children: List.generate(
+                              6,
+                                  (index) => Container(
+                                margin: EdgeInsets.symmetric(horizontal: 5.0), // Add margin
+                                child: Container(
+                                  width: screenHeight * 0.06,
+                                  height: screenHeight * 0.07,
                                   alignment: Alignment.center,
                                   decoration: BoxDecoration(
                                     border: Border.all(color: Colors.white),
@@ -136,33 +136,32 @@ class LoginPage extends StatelessWidget {
                               ),
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 80.0),
-                      child: Align(
-                        alignment: Alignment.centerRight,
-                        child: Container(
-                          width: 70.0,
-                          height: 70.0,
-                          margin: const EdgeInsets.only(top: 20.0, right: 30.0),
-                          child: FloatingActionButton(
-                            backgroundColor: Colors.green,
-                            onPressed: () {
-                              // Implement your logic here
-                            },
-                            child: const Icon(
-                              Icons.arrow_forward,
-                              size: 40.0,
-                              color: Colors.white,
-                            ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: screenHeight * 0.04),
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: Container(
+                        width: screenHeight * 0.14,
+                        height: screenHeight * 0.14,
+                        child: FloatingActionButton(
+                          backgroundColor: Colors.green,
+                          onPressed: () {
+                            // Implement your logic here
+                          },
+                          child: const Icon(
+                            Icons.arrow_forward,
+                            size: 40.0,
+                            color: Colors.white,
                           ),
                         ),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ],

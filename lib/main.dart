@@ -30,7 +30,7 @@ class MainApp extends StatelessWidget {
       // Use SplashScreen as the initial screen
       // home: const SplashScreen(),
       // home: const HomePage(),
-      home: const CardPage(),
+      home: const LoginPage(),
       routes: {
         '/login': (context) => const LoginPage(), // Add route for LoginPage
         '/home': (context) => const HomePage(),
