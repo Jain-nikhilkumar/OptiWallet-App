@@ -1,7 +1,5 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:OptiWallet/firebasehandles/firebase_auth.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -122,7 +120,7 @@ class _LoginPageState extends State<LoginPage> {
                             children: List.generate(
                               6,
                                   (index) => Container(
-                                margin: EdgeInsets.symmetric(horizontal: 5.0), // Add margin
+                                margin: const EdgeInsets.symmetric(horizontal: 5.0), // Add margin
                                 child: Container(
                                   width: screenHeight * 0.06,
                                   height: screenHeight * 0.07,
@@ -154,7 +152,7 @@ class _LoginPageState extends State<LoginPage> {
                     padding: EdgeInsets.only(top: screenHeight * 0.04),
                     child: Align(
                       alignment: Alignment.centerRight,
-                      child: Container(
+                      child: SizedBox(
                         width: screenHeight * 0.14,
                         height: screenHeight * 0.14,
                         child: FloatingActionButton(

@@ -1,11 +1,13 @@
 import 'dart:async';
 
+import 'package:OptiWallet/firebasehandles/auth_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:provider/provider.dart';
 
 class FirebaseAuthOperations {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  static final FirebaseAuth _auth = FirebaseAuth.instance;
   late BuildContext context;
 
   FirebaseAuthOperations({required this.context});
@@ -50,57 +52,67 @@ class FirebaseAuthOperations {
     }
   }
 
-  Future<User?> signInWithPhoneNumber(String phoneNumber) async {
-    Completer<User?> completer = Completer<User?>();
-
-    try {
-      await _auth.verifyPhoneNumber(
-        phoneNumber: phoneNumber,
-        verificationCompleted: (PhoneAuthCredential credential) async {
-          UserCredential userCredential = await _auth.signInWithCredential(credential);
-          completer.complete(userCredential.user);
-        },
-        verificationFailed: (FirebaseAuthException e) {
-          print('Error verifying phone number: $e');
-          showToast('Error verifying phone number: $e');
-          completer.complete(null);
-        },
-        codeSent: (String verificationId, int? resendToken) {
-          // Handle code sent (e.g., show UI to enter verification code)
-          // You can store the verificationId and resendToken for later use
-          print('Code sent to $phoneNumber');
-          showToast('Code sent to $phoneNumber');
-        },
-        codeAutoRetrievalTimeout: (String verificationId) {
-          // Auto-retrieval timeout, handle the situation here
-          print('Auto-retrieval timeout for $verificationId');
-          showToast('Auto-retrieval timeout for $verificationId');
-          completer.complete(null);
-        },
-        timeout: const Duration(seconds: 60), // Timeout for code auto-retrieval
-      );
-    } catch (e) {
-      print('Error signing in with phone number: $e');
-      showToast('Error signing in with phone number: $e');
-      completer.complete(null);
-    }
-
-    return completer.future;
+  // Sign in with phone number
+  Future<void> signInWithPhoneNumber(String phoneNumber, Function(String) onCodeSent) async {
+    await _auth.verifyPhoneNumber(
+      phoneNumber: phoneNumber,
+      verificationCompleted: (PhoneAuthCredential credential) async {
+        await _auth.signInWithCredential(credential);
+      },
+      verificationFailed: (FirebaseAuthException e) {
+        debugPrint('Verification Failed: $e');
+      },
+      codeSent: (String verificationId, int? resendToken) {
+        onCodeSent(verificationId);
+      },
+      codeAutoRetrievalTimeout: (String verificationId) {
+        debugPrint('Code Auto Retrieval Timeout');
+      },
+      timeout: const Duration(seconds: 60),
+    );
   }
 
+  // Sign in with verification code
+  Future<UserCredential?> signInWithVerificationCode(String verificationId, String code) async {
+    try {
+      PhoneAuthCredential credential = PhoneAuthProvider.credential(verificationId: verificationId, smsCode: code);
+      return await _auth.signInWithCredential(credential);
+    } catch (e) {
+      debugPrint('Error signing in with verification code: $e');
+      return null;
+    }
+  }
+
+  // Get the current signed-in user
+  User? getCurrentUser() {
+    return _auth.currentUser;
+  }
+
+  // Get user details
+  Future<User?> getUserDetails() async {
+    User? user = _auth.currentUser;
+    if (user != null) {
+      await user.reload();
+      return _auth.currentUser;
+    }
+    return null;
+  }
+
+
+  // Sign out
+  void signOutProvider() {
+    Provider.of<MyAuthProvider>(context).setLoggedIn(false);
+  }
   Future<void> signOut() async {
     try {
       await _auth.signOut();
       print('User signed out');
       showToast('User signed out');
+      signOutProvider();
     } catch (e) {
       print('Error signing out: $e');
       showToast('Error signing out: $e');
     }
-  }
-
-  User? getCurrentUser() {
-    return _auth.currentUser;
   }
 
   Future<void> sendPasswordResetEmail(String email) async {

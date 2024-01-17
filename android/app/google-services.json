@@ -8,47 +8,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:176716014594:android:2599add285e862042b331b",
-        "android_client_info": {
-          "package_name": "com.android.application"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyC-kXaDP2kMbFhDl4aQYg1QhlQ1cAfhRXc"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
         "mobilesdk_app_id": "1:176716014594:android:a480c63b7c6b41f62b331b",
         "android_client_info": {
           "package_name": "com.example.demo"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyC-kXaDP2kMbFhDl4aQYg1QhlQ1cAfhRXc"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:176716014594:android:ba896a2ae407553a2b331b",
-        "android_client_info": {
-          "package_name": "com.example.optiwallet"
         }
       },
       "oauth_client": [],
