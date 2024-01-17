@@ -27,8 +27,12 @@ dependencies:
   dio: ^5.4.0
   path_provider: ^2.1.1
   provider: ^6.1.1
-  lottie: ^1.1.0 # Use the latest version available
+#  lottie: ^1.1.0 # Use the latest version available
   flutter_svg: ^0.22.0
+#  fluttertoast: ^8.0.8
+#  flushbar: ^1.10.4
+  lottie: ^1.0.1
+
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -56,9 +60,10 @@ flutter:
     - assets/icon_image.png
     - assets/img.png
     - assets/splash_screen.jpg
+    - assets/background_image.svg
     - assets/login_logo.png
     - assets/login_logo2.png
-    - assets/background_image2.png
+    - assets/background_image.png
     - assets/login_logo.jpg
     - assets/OptiWallet.mp4
     - assets/your_animation.json

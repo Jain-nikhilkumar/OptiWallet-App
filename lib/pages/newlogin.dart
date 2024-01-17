@@ -1,19 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:OptiWallet/firebasehandles/firebase_auth.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class LoginPage extends StatelessWidget {
+  const LoginPage({Key? key}) : super(key: key);
 
-  @override
-  State<LoginPage> createState() => _LoginPageState();
-}
-
-class _LoginPageState extends State<LoginPage> {
-
-  final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _otpController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -115,31 +105,33 @@ class _LoginPageState extends State<LoginPage> {
                         const SizedBox(height: 5.0),
                         SizedBox(
                           width: screenWidth * 0.8,
-                          height: screenHeight * 0.07,
+                          height: screenHeight * 0.07, // Adjusted the height
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             // Adjusted the spacing between OTP input boxes
                             children: List.generate(
                               6,
-                                  (index) => Container(
-                                margin: EdgeInsets.symmetric(horizontal: 5.0), // Add margin
+                                  (index) => Expanded(
                                 child: Container(
-                                  width: screenHeight * 0.06,
-                                  height: screenHeight * 0.07,
-                                  alignment: Alignment.center,
-                                  decoration: BoxDecoration(
-                                    border: Border.all(color: Colors.white),
-                                    borderRadius: BorderRadius.circular(10.0),
-                                  ),
-                                  child: const TextField(
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(color: Colors.white),
-                                    keyboardType: TextInputType.number,
-                                    maxLength: 1,
-                                    decoration: InputDecoration(
-                                      counter: Offstage(),
-                                      enabledBorder: InputBorder.none,
-                                      focusedBorder: InputBorder.none,
+                                  margin: const EdgeInsets.symmetric(horizontal: 5.0), // Add margin
+                                  child: Container(
+                                    width: double.infinity, // Expanded the width
+                                    height: screenHeight * 0.07, // Adjusted the height
+                                    alignment: Alignment.center,
+                                    decoration: BoxDecoration(
+                                      border: Border.all(color: Colors.white),
+                                      borderRadius: BorderRadius.circular(10.0),
+                                    ),
+                                    child: const TextField(
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(color: Colors.white),
+                                      keyboardType: TextInputType.number,
+                                      maxLength: 1,
+                                      decoration: InputDecoration(
+                                        counter: Offstage(),
+                                        enabledBorder: InputBorder.none,
+                                        focusedBorder: InputBorder.none,
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -151,12 +143,12 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.only(top: screenHeight * 0.04),
+                    padding: EdgeInsets.only(top: screenHeight * 0.02), // Adjusted the top padding
                     child: Align(
                       alignment: Alignment.centerRight,
-                      child: Container(
-                        width: screenHeight * 0.14,
-                        height: screenHeight * 0.14,
+                      child: SizedBox(
+                        width: screenHeight * 0.1, // Adjusted the width
+                        height: screenHeight * 0.1, // Adjusted the height
                         child: FloatingActionButton(
                           backgroundColor: Colors.green,
                           onPressed: () {
@@ -164,7 +156,7 @@ class _LoginPageState extends State<LoginPage> {
                           },
                           child: const Icon(
                             Icons.arrow_forward,
-                            size: 40.0,
+                            size: 32.0, // Adjusted the size
                             color: Colors.white,
                           ),
                         ),
@@ -180,4 +172,3 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 }
-
