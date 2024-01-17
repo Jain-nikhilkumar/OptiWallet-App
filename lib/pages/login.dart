@@ -1,9 +1,19 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:OptiWallet/firebasehandles/firebase_auth.dart';
 
-class LoginPage extends StatelessWidget {
-  const LoginPage({Key? key}) : super(key: key);
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
 
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _otpController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,6 +65,7 @@ class LoginPage extends StatelessWidget {
                         width: double.infinity,
                         height: 50.0,
                         child: TextField(
+                          controller: _phoneController,
                           keyboardType: TextInputType.phone,
                           style: const TextStyle(color: Colors.white),
                           decoration: InputDecoration(
@@ -77,8 +88,19 @@ class LoginPage extends StatelessWidget {
                       child: Align(
                         alignment: Alignment.centerRight,
                         child: ElevatedButton(
-                          onPressed: () {
+                          onPressed: () async {
                             // Implement your login functionality here
+                            // String phoneNumber = // get the phone number from the TextField
+                            FirebaseAuthOperations auth = FirebaseAuthOperations(context: context);
+                            User? user = await auth.signInWithPhoneNumber(_phoneController.text);
+                            if (user != null) {
+                              // Authentication successful, navigate to the next screen or perform further actions
+                              debugPrint("Successfull");
+                            } else {
+                              // Authentication failed, handle accordingly
+                              debugPrint("UNSuccessfull");
+
+                            }
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.purple,
@@ -112,9 +134,9 @@ class LoginPage extends StatelessWidget {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: List.generate(
-                                4,
+                                6,
                                     (index) => Container(
-                                  width: 50.0,
+                                  width: 40.0,
                                   height: 50.0,
                                   alignment: Alignment.center,
                                   decoration: BoxDecoration(
@@ -171,4 +193,6 @@ class LoginPage extends StatelessWidget {
       ),
     );
   }
+
 }
+
