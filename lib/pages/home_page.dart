@@ -1,6 +1,8 @@
+import 'package:OptiWallet/firebasehandles/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:OptiWallet/pages/scan_page.dart';
 import 'package:OptiWallet/download.dart';
+import 'package:provider/provider.dart';
 // ... (Your existing imports)
 
 class HomePage extends StatefulWidget {
@@ -84,7 +86,10 @@ class _HomePageState extends State<HomePage> {
       body: _buildBody(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          _showAddDialog(context);
+          // _showAddDialog(context);
+
+          // Use call _downloadData
+          _downloadData();
         },
         tooltip: 'Add',
         child: const Icon(Icons.add),
@@ -222,7 +227,7 @@ class _HomePageState extends State<HomePage> {
               onPressed: () {
                 String enteredText = textEditingController.text;
                 // Use the enteredText as needed, for example, call _downloadData
-                _downloadData(enteredText);
+                _downloadData(enteredText: enteredText);
                 Navigator.pop(context);
               },
               child: const Text('Download'),
@@ -233,13 +238,15 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Future<void> _downloadData(String enteredText) async {
+  Future<void> _downloadData({String enteredText="vc:hid:testnet:zDm9qhMncSGnudGYquzz3mGfV8yahS4yKcWmeWTb5pcxe"}) async {
     try {
       // Handle download action or any other logic here
       // await getDocumentData(context,"did:hid:namespace:.......................");
+
+      String? email =Provider.of<MyAuthProvider>(context).getUser?.email;
       await getDocumentData(
-          context,
-          "vc:hid:testnet:zDm9qhMncSGnudGYquzz3mGfV8yahS4yKcWmeWTb5pcxe",
+          email!,
+          enteredText,
           collectionId: "Credentials");
       _loadData(); // Refresh the data after download
     } catch (e) {

@@ -1,11 +1,15 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:OptiWallet/apihandler/api_handler.dart';
+import 'package:OptiWallet/firebasehandles/auth_provider.dart';
+import 'package:OptiWallet/firebasehandles/firestore_handler.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:provider/provider.dart';
 
 typedef DownloadCallback = void Function(Map<String, dynamic> jsonData);
 
@@ -21,63 +25,81 @@ void _showToast(String message, {Color backgroundColor = Colors.white, Color tex
   );
 }
 
-Future<Map<String, dynamic>> getDocumentData(
-    BuildContext context,
+Future<bool> getDocumentData(
+    String email,
     String documentId, {
       String collectionId = "DID",
       DownloadCallback? downloadCallback,
     }) async {
+
+  FirestoreHandler firestoreHandler = FirestoreHandler();
   try {
+
     var status = await Permission.storage.status;
     if (!status.isGranted) {
       var result = await Permission.storage.request();
       if (result != PermissionStatus.granted) {
         _showToast('Storage permission not granted', backgroundColor: Colors.redAccent, textColor: Colors.white);
-        return {};
+        return false;
       }
     }
 
-    BuildContext localContext = context;
+    Map<String, dynamic>? user = await firestoreHandler.getDocument('USER', email);
+    List<String> creds = user?['credentials'];
 
-    CollectionReference<Map<String, dynamic>> collection = FirebaseFirestore.instance.collection(collectionId);
-
-    DocumentSnapshot<Map<String, dynamic>> documentSnapshot = await collection.doc(documentId).get();
-
-    if (documentSnapshot.exists) {
-      Map<String, dynamic> data = documentSnapshot.data()!;
-      await saveDataAsJson(data, documentId);
-      _showToast('Data saved successfully');
-
+    for(String id in creds){
+      Map<String, dynamic>? data = await firestoreHandler.getDocument('DID', id);
+      await saveDataAsJson(data!, id);
       // Notify the caller (UI) about the download completion
       if (downloadCallback != null) {
         downloadCallback(data);
       }
-
-      return data;
-    } else {
-      showDialog(
-        context: localContext,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('Document Not Found'),
-            content: Text('The document with ID $documentId does not exist.'),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text('OK'),
-              ),
-            ],
-          );
-        },
-      );
-
-      return {};
     }
+    _showToast('Data saved successfully');
+    firestoreHandler.closeFirestore();
+    return true;
+
+    // CollectionReference<Map<String, dynamic>> collection = FirebaseFirestore.instance.collection(collectionId);
+    //
+    // DocumentSnapshot<Map<String, dynamic>> documentSnapshot = await collection.doc(documentId).get();
+    //
+    // if (documentSnapshot.exists) {
+    //   Map<String, dynamic> data = documentSnapshot.data()!;
+    //   await saveDataAsJson(data, documentId);
+    //   _showToast('Data saved successfully');
+    //
+    //   // Notify the caller (UI) about the download completion
+    //   if (downloadCallback != null) {
+    //     downloadCallback(data);
+    //   }
+    //
+    //   return data;
+    // } else {
+    //   showDialog(
+    //     context: localContext,
+    //     builder: (BuildContext context) {
+    //       return AlertDialog(
+    //         title: const Text('Document Not Found'),
+    //         content: Text('The document with ID $documentId does not exist.'),
+    //         actions: <Widget>[
+    //           TextButton(
+    //             onPressed: () {
+    //               Navigator.of(context).pop();
+    //             },
+    //             child: const Text('OK'),
+    //           ),
+    //         ],
+    //       );
+    //     },
+    //   );
+
+      // return {};
+    // }
   } catch (e) {
     _showToast('Error fetching document: $e');
-    return {};
+    debugPrint('Error while getting Credentials');
+    firestoreHandler.closeFirestore();
+    return false;
   }
 }
 

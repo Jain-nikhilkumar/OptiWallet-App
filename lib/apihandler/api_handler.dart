@@ -5,6 +5,7 @@ class ApiService {
   late String authToken;
   final String baseUrl = 'https://api.entity.hypersign.id';
   final String oauthEndpoint = '/api/v1/app/oauth';
+  final String apiUrl = 'https://ent_7d1d2a9.api.entity.hypersign.id/';
   final String didCreateEndpoint = '/api/v1/did/create';
   final String didRegisterEndpoint = '/api/v1/did/register';
   final String presentationEndpoint = '/api/v1/presentation';
@@ -24,7 +25,7 @@ class ApiService {
   Future<void> postOAuthApi() async {
     final Map<String, String> headers = {
       'Content-Type': 'application/json',
-      'X-Api-Secret-Key': '1fc7504b27223b6b0b350c346d91a.437595754a8f3adf8cb85ae7dcbd34d89735fdc5eaf8547148c4e5512549dfdca443e46aee506def00f1565eeef7a7d23',
+      'X-Api-Secret-Key': '8e160eaf60f98031d2987b236a8e4.c1f5715c66c7effeab03c2074dc96c68522fa28af58b9607eeba37cf902d721817c3afe10485d6e375341a83c4ad1fe55',
     };
 
     try {
@@ -35,7 +36,9 @@ class ApiService {
       );
 
       Map<String, dynamic> res = _handleResponse(response);
-      authToken = res['token'];
+      authToken = "${res['tokenType'] as String} ${res['access_token'] as String}";
+
+      // res['token'];
 
       // return _handleResponse(response);
     } catch (e) {
@@ -44,16 +47,19 @@ class ApiService {
     }
   }
 
-  Future<Map<String, dynamic>> postCreateDid(String namespace) async {
-    final Map<String, String> headers = {
-      'Content-Type': 'application/json',
-    };
-
-    final Map<String, dynamic> requestBody = {'namespace': namespace};
-
+  Future<Map<String, dynamic>> postCreateDid({String namespace = 'testnet'}) async {
     try {
+      await postOAuthApi();
+
+      final Map<String, String> headers = {
+        'Content-Type': 'application/json',
+        'Authorization': authToken
+      };
+
+      final Map<String, dynamic> requestBody = {'namespace': namespace};
+
       final response = await http.post(
-        Uri.parse('$baseUrl$didCreateEndpoint'),
+        Uri.parse('$apiUrl$didCreateEndpoint'),
         headers: headers,
         body: jsonEncode(requestBody),
       );
@@ -66,13 +72,16 @@ class ApiService {
   }
 
   Future<Map<String, dynamic>> postRegisterDid(Map<String, dynamic> requestBody) async {
-    final Map<String, String> headers = {
-      'Content-Type': 'application/json',
-    };
-
     try {
+      await postOAuthApi();
+
+      final Map<String, String> headers = {
+        'Content-Type': 'application/json',
+        'Authorization': authToken
+      };
+
       final response = await http.post(
-        Uri.parse('$baseUrl$didRegisterEndpoint'),
+        Uri.parse('$apiUrl$didRegisterEndpoint'),
         headers: headers,
         body: jsonEncode(requestBody),
       );
@@ -85,15 +94,27 @@ class ApiService {
   }
 
   Future<Map<String, dynamic>> postSubmitPresentation(Map<String, dynamic> requestBody) async {
-    final Map<String, String> headers = {
-      'Content-Type': 'application/json',
-    };
-
     try {
+      await postOAuthApi();
+
+      final Map<String, String> headers = {
+        'Content-Type': 'application/json',
+        'Authorization': authToken
+      };
+
+      Map<String,dynamic> presentation = {
+        'credentialDocuments': [
+          requestBody['credentialDocument']
+        ],
+        "holderDid": requestBody['credentialDocuments']['credentialSubject']['id'] as String,
+        "challenge": "OptiSecure",
+        "domain": "optisync.com"
+      };
+
       final response = await http.post(
-        Uri.parse('$baseUrl$presentationEndpoint'),
+        Uri.parse('$apiUrl$presentationEndpoint'),
         headers: headers,
-        body: jsonEncode(requestBody),
+        body: jsonEncode(presentation),
       );
 
       return _handleResponse(response);
@@ -104,13 +125,16 @@ class ApiService {
   }
 
   Future<Map<String, dynamic>> postVerifyPresentation(Map<String, dynamic> requestBody) async {
-    final Map<String, String> headers = {
-      'Content-Type': 'application/json',
-    };
-
     try {
+      await postOAuthApi();
+
+      final Map<String, String> headers = {
+        'Content-Type': 'application/json',
+        'Authorization': authToken
+      };
+
       final response = await http.post(
-        Uri.parse('$baseUrl$verifyPresentationEndpoint'),
+        Uri.parse('$apiUrl$verifyPresentationEndpoint'),
         headers: headers,
         body: jsonEncode(requestBody),
       );
@@ -125,6 +149,7 @@ class ApiService {
   Future<Map<String, dynamic>> postRequest(String endPoint, Map<String, dynamic> requestBody) async {
     final Map<String, String> headers = {
       'Content-Type': 'application/json',
+      'Authorization': authToken
     };
 
     try {

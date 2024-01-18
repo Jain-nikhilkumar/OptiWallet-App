@@ -26,39 +26,56 @@ class FirebaseAuthOperations {
     );
   }
 
+  Future<User?> createDidUser(UserCredential userCredential) async {
+    try {
+      ApiService apiService = ApiService();
+      Map<String,dynamic> credatedDid= await apiService.postCreateDid(namespace: "testnet");
+      if(credatedDid.containsKey('metaData')) {
+        Map<String,dynamic> metaData = credatedDid['metaData'];
+        if(metaData.containsKey('didDocument')){
+          Map<String,dynamic> didDocument = {
+            "didDocument": metaData['didDocument'],
+            "verificationMethodId": "${metaData['didDocument']['verificationMethod'][0]['id'] as String}#key-1"
+          };
+          Map<String,dynamic> responseDocument = await apiService.postRegisterDid(didDocument);
+          Map<String,dynamic> userData = {
+            "did": responseDocument['did'] as String,
+            "email": userCredential.user?.email,
+            "photo": userCredential.user?.photoURL
+          };
+
+          // Inserting did to Firestore
+          FirestoreHandler firestoreHandler = FirestoreHandler();
+          if(await firestoreHandler.setDocument('DID', responseDocument['did'] as String, responseDocument) &&
+              await firestoreHandler.setDocument('USER', userCredential.user?.email as String, userData)){
+            firestoreHandler.closeFirestore();
+            return userCredential.user;
+          } else {
+            debugPrint('ERROR : Failed to store in Firestore');
+          }
+          firestoreHandler.closeFirestore();
+        } else {
+          debugPrint("ERROR : metaData doesn't contains didDocument");
+        }
+      } else {
+        debugPrint("ERROR : DID doesn't contains metaData");
+      }
+
+      return null;
+    } catch (e) {
+      debugPrint('Error in Creating Did createDidUser() : $e');
+      return null;
+    }
+  }
+
+
   Future<User?> signInWithEmailAndPassword(String email, String password) async {
     try {
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
-      ApiService apiService = ApiService();
-      Map<String,dynamic> credatedDid= await apiService.postCreateDid("testnet");
-      if(credatedDid.containsKey('metaData')) {
-        Map<String,dynamic> metaData = credatedDid['metaData'];
-        if(metaData.containsKey('didDocument') && metaData.containsKey('verificationMethod')){
-          Map<String,dynamic> didDocument = {
-            "didDocument": metaData['didDocument'],
-            "verificationMethodId": metaData['verificationMethod']['id'] as String
-          };
-          Map<String,dynamic> responseDocument = await apiService.postRegisterDid(didDocument);
-          Map<String,dynamic> userData = {
-            "did": responseDocument['did'] as String,
-            "name": userCredential.user?.email,
-            "photo": userCredential.user?.providerData
-          };
-
-          // Inserting did to Firestore
-          FirestoreHandler firestoreHandler = FirestoreHandler();
-          if(await firestoreHandler.setDocument('DID', responseDocument['did'] as String, responseDocument)
-          &&
-          await firestoreHandler.setDocument('USER', userCredential.user?.email as String, userData)){
-            return userCredential.user;
-          }
-        }
-      }
-      await signOut();
-      return null;
+      return userCredential.user;
     } catch (e) {
       // If sign-in fails, check the error code to determine the reason
       if (e is FirebaseAuthException) {
@@ -79,7 +96,11 @@ class FirebaseAuthOperations {
         email: email,
         password: password,
       );
-      return userCredential.user;
+      User? user = await createDidUser(userCredential);
+      if (user == null){
+        await signOut();
+      }
+      return user;
     } catch (e) {
       debugPrint('Error signing up: $e');
       showToast('Error signing up: $e');

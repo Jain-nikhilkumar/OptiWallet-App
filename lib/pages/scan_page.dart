@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:OptiWallet/apihandler/api_handler.dart';
 import 'package:OptiWallet/download.dart';
 import 'package:OptiWallet/firebasehandles/firestore_handler.dart';
 import 'package:flutter/material.dart';
@@ -78,29 +79,27 @@ class _ScanPageState extends State<ScanPage> {
         Map<String, dynamic> vc = filteredJsonFiles.first;
         if(vc.containsKey("credentialDocument") && vc["credentialDocument"].isNotEmpty){
           var credentialDocument = vc["credentialDocument"];
-          if(credentialDocument is Map<String, dynamic> &&
-              credentialDocument.containsKey("id") &&
-              credentialDocument["id"].toString().isNotEmpty) {
-            print("VC : ${credentialDocument['id'].toString()}");
-            String collection = 'Tokens';
-            String documentId = extractedText['token'];
-            Map<String, dynamic> data = {
-              'VCId': credentialDocument['id'].toString(),
-              'verified': true
-            };
-            FirestoreHandler firestoreHandler = FirestoreHandler();
-            bool updateDocument = await firestoreHandler.updateDocument(collection, documentId, data);
-            updateDocument ?
-            _showDialogBox(title: 'Verifying Identity', content: "Auth success ") :
-            _showDialogBox(title: 'Verifying Identity', content: "Couldn't Update") ;
-            firestoreHandler.closeFirestore();
-            return;
-            // FirebaseDbOperations firebaseDbOperations = FirebaseDbOperations(Firebase.app());
-            // await firebaseDbOperations.addKeyValuePair('Tokens/${extractedText['']}', 'VCId', credentialDocuments["id"].toString());
-            // await firebaseDbOperations.addKeyValuePair('Tokens/${extractedText['']}', 'verified', true);
-          } else {
-            _showDialogBox(title: 'Verifying Identity', content: 'Cannot get VCId');
-          }
+
+          // Using Verifiable Credentials
+          ApiService apiService = ApiService();
+          Map<String,dynamic> response = await apiService.postSubmitPresentation(vc);
+          response = await apiService.postVerifyPresentation(response);
+
+          Map<String, dynamic> data = {
+            'VCId': credentialDocument['id'].toString(),
+            'verified': response['verified']
+          };
+
+          debugPrint("VC : ${credentialDocument['id'].toString()}");
+          String collection = 'Tokens';
+          String documentId = extractedText['token'];
+          FirestoreHandler firestoreHandler = FirestoreHandler();
+          bool updateDocument = await firestoreHandler.updateDocument(collection, documentId, data);
+          updateDocument ?
+          _showDialogBox(title: 'Verifying Identity', content: "Auth success ") :
+          _showDialogBox(title: 'Verifying Identity', content: "Couldn't Update") ;
+          firestoreHandler.closeFirestore();
+          return;
         } else{
           _showDialogBox(title: 'Verifying Identity', content: 'Cannot get credentialDocument');
         }
