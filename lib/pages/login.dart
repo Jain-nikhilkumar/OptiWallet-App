@@ -180,7 +180,7 @@ class _LoginPageState extends State<LoginPage> {
         // Successfully signed in
         debugPrint('User signed in: ${userCredential.displayName}');
         // Set the authentication status to true
-        Provider.of<MyAuthProvider>(context, listen: false).setUser(userCredential!);
+        Provider.of<MyAuthProvider>(context, listen: false).setUser(userCredential);
         // Navigate to the home screen
         navigateTo('/home');
       } else {

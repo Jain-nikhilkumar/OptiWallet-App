@@ -11,7 +11,7 @@ class ApiService {
   final String verifyPresentationEndpoint = '/api/v1/presentation/verify';
 
   Map<String, dynamic> _handleResponse(http.Response response) {
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       // Successful response, parse and return the data
       return jsonDecode(response.body);
     } else {

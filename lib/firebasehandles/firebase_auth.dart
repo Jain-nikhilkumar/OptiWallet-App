@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import 'package:OptiWallet/apihandler/api_handler.dart';
 import 'package:OptiWallet/firebasehandles/auth_provider.dart';
+import 'package:OptiWallet/firebasehandles/firestore_handler.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -30,7 +32,33 @@ class FirebaseAuthOperations {
         email: email,
         password: password,
       );
-      return userCredential.user;
+      ApiService apiService = ApiService();
+      Map<String,dynamic> credatedDid= await apiService.postCreateDid("testnet");
+      if(credatedDid.containsKey('metaData')) {
+        Map<String,dynamic> metaData = credatedDid['metaData'];
+        if(metaData.containsKey('didDocument') && metaData.containsKey('verificationMethod')){
+          Map<String,dynamic> didDocument = {
+            "didDocument": metaData['didDocument'],
+            "verificationMethodId": metaData['verificationMethod']['id'] as String
+          };
+          Map<String,dynamic> responseDocument = await apiService.postRegisterDid(didDocument);
+          Map<String,dynamic> userData = {
+            "did": responseDocument['did'] as String,
+            "name": userCredential.user?.email,
+            "photo": userCredential.user?.providerData
+          };
+
+          // Inserting did to Firestore
+          FirestoreHandler firestoreHandler = FirestoreHandler();
+          if(await firestoreHandler.setDocument('DID', responseDocument['did'] as String, responseDocument)
+          &&
+          await firestoreHandler.setDocument('USER', userCredential.user?.email as String, userData)){
+            return userCredential.user;
+          }
+        }
+      }
+      await signOut();
+      return null;
     } catch (e) {
       // If sign-in fails, check the error code to determine the reason
       if (e is FirebaseAuthException) {
