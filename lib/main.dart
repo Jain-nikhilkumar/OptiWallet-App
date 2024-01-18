@@ -1,6 +1,7 @@
 // main.dart
 import 'package:OptiWallet/firebasehandles/auth_provider.dart';
-import 'package:OptiWallet/pages/login_page.dart';
+import 'package:OptiWallet/pages/login.dart';
+// import 'package:OptiWallet/pages/login_page.dart';
 import 'package:OptiWallet/pages/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -46,7 +47,7 @@ class _MainAppState extends State<MainApp> {
       // initialRoute: '/login',
       routes: {
         '/splash': (context) => const SplashScreen(),
-        '/login': (context) => const LoginPage(), // Add route for LoginPage
+        '/login': (context) => const LoginPage(),
         '/home': (context) => const HomePage(),
       },
       onGenerateRoute: (settings) {

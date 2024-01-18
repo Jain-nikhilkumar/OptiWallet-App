@@ -28,6 +28,36 @@ class FirestoreHandler {
     }
   }
 
+  // Function to add a document to Firestore
+  Future<bool> setDocument(String collection, String id, Map<String, dynamic> data) async {
+    try {
+      await _firestore.collection(collection).doc(id).set(data);
+      return true; // Successful operation
+    } catch (e) {
+      print("Error adding document: $e");
+      return false; // Operation failed
+    }
+  }
+
+  // Function to get a particular document from Firestore
+  Future<Map<String, dynamic>?> getDocument(String collection, String documentId) async {
+    try {
+      DocumentSnapshot documentSnapshot = await _firestore.collection(collection).doc(documentId).get();
+
+      if (documentSnapshot.exists) {
+        // Document found, return its data
+        return documentSnapshot.data() as Map<String, dynamic>;
+      } else {
+        // Document does not exist
+        print("Document with ID $documentId does not exist in collection $collection");
+        return null;
+      }
+    } catch (e) {
+      print("Error getting document: $e");
+      return null;
+    }
+  }
+
   // Function to get documents from Firestore
   Future<List<Map<String, dynamic>>> getDocuments(String collection) async {
     List<Map<String, dynamic>> documents = [];

@@ -32,7 +32,14 @@ class FirebaseAuthOperations {
       );
       return userCredential.user;
     } catch (e) {
-      print('Error signing in: $e');
+      // If sign-in fails, check the error code to determine the reason
+      if (e is FirebaseAuthException) {
+        if (e.code == 'user-not-found') {
+          // The email is not registered
+          return await signUpWithEmailAndPassword(email, password);
+        }
+      }
+      debugPrint('Error signing in: $e');
       showToast('Error signing in: $e');
       return null;
     }
@@ -46,7 +53,7 @@ class FirebaseAuthOperations {
       );
       return userCredential.user;
     } catch (e) {
-      print('Error signing up: $e');
+      debugPrint('Error signing up: $e');
       showToast('Error signing up: $e');
       return null;
     }
@@ -102,6 +109,7 @@ class FirebaseAuthOperations {
   // Sign out
   void signOutProvider() {
     Provider.of<MyAuthProvider>(context).setLoggedIn(false);
+    Provider.of<MyAuthProvider>(context).setUser(null);
   }
   Future<void> signOut() async {
     try {
