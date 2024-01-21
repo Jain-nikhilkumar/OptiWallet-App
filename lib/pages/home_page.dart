@@ -1,8 +1,7 @@
-import 'package:OptiWallet/firebasehandles/auth_provider.dart';
+import 'package:OptiWallet/firebasehandles/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:OptiWallet/pages/scan_page.dart';
 import 'package:OptiWallet/download.dart';
-import 'package:provider/provider.dart';
 // ... (Your existing imports)
 
 class HomePage extends StatefulWidget {
@@ -85,11 +84,17 @@ class _HomePageState extends State<HomePage> {
       ),
       body: _buildBody(),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
+        onPressed: () async {
           // _showAddDialog(context);
 
           // Use call _downloadData
           _downloadData();
+
+          // String? email =Provider.of<MyAuthProvider>(context).getUser?.email;
+          // await getDocumentData(
+          //     email!,
+          //     collectionId: "Credentials");
+          // _loadData(); // Refresh the data after download
         },
         tooltip: 'Add',
         child: const Icon(Icons.add),
@@ -204,30 +209,30 @@ class _HomePageState extends State<HomePage> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Add New Item'),
-          content: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: textEditingController,
-                decoration: const InputDecoration(
-                  labelText: 'Enter text',
-                ),
-              ),
-            ],
-          ),
+          // content: Column(
+          //   crossAxisAlignment: CrossAxisAlignment.start,
+          //   mainAxisSize: MainAxisSize.min,
+          //   children: [
+          //     TextField(
+          //       controller: textEditingController,
+          //       decoration: const InputDecoration(
+          //         labelText: 'Enter text',
+          //       ),
+          //     ),
+          //   ],
+          // ),
           actions: [
+            // TextButton(
+            //   onPressed: () {
+            //     Navigator.pop(context);
+            //   },
+            //   child: const Text('Cancel'),
+            // ),
             TextButton(
               onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                String enteredText = textEditingController.text;
                 // Use the enteredText as needed, for example, call _downloadData
-                _downloadData(enteredText: enteredText);
+                // _downloadData(enteredText: enteredText);
+                _downloadData();
                 Navigator.pop(context);
               },
               child: const Text('Download'),
@@ -238,15 +243,14 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Future<void> _downloadData({String enteredText="vc:hid:testnet:zDm9qhMncSGnudGYquzz3mGfV8yahS4yKcWmeWTb5pcxe"}) async {
+  Future<void> _downloadData() async {
     try {
       // Handle download action or any other logic here
       // await getDocumentData(context,"did:hid:namespace:.......................");
 
-      String? email =Provider.of<MyAuthProvider>(context).getUser?.email;
+      String? email= FirebaseAuthOperations(context: context).getUserEmail();
       await getDocumentData(
           email!,
-          enteredText,
           collectionId: "Credentials");
       _loadData(); // Refresh the data after download
     } catch (e) {

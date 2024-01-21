@@ -1,15 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:OptiWallet/apihandler/api_handler.dart';
-import 'package:OptiWallet/firebasehandles/auth_provider.dart';
 import 'package:OptiWallet/firebasehandles/firestore_handler.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:provider/provider.dart';
 
 typedef DownloadCallback = void Function(Map<String, dynamic> jsonData);
 
@@ -26,8 +22,8 @@ void _showToast(String message, {Color backgroundColor = Colors.white, Color tex
 }
 
 Future<bool> getDocumentData(
-    String email,
-    String documentId, {
+    String email, {
+      String documentId = '',
       String collectionId = "DID",
       DownloadCallback? downloadCallback,
     }) async {
@@ -45,16 +41,25 @@ Future<bool> getDocumentData(
     }
 
     Map<String, dynamic>? user = await firestoreHandler.getDocument('USER', email);
-    List<String> creds = user?['credentials'];
-
-    for(String id in creds){
-      Map<String, dynamic>? data = await firestoreHandler.getDocument('DID', id);
-      await saveDataAsJson(data!, id);
+    List<dynamic> creds = user?['credentials'];
+    debugPrint('Credential list: $creds');
+    for (var id in creds) {
+      Map<String, dynamic>? data = await firestoreHandler.getDocument('Credentials', id as String);
+      await saveDataAsJson(data!, id as String);
       // Notify the caller (UI) about the download completion
       if (downloadCallback != null) {
         downloadCallback(data);
       }
     }
+
+    // for(String id in creds){
+    //   Map<String, dynamic>? data = await firestoreHandler.getDocument('Credentials', id);
+    //   await saveDataAsJson(data!, id);
+    //   // Notify the caller (UI) about the download completion
+    //   if (downloadCallback != null) {
+    //     downloadCallback(data);
+    //   }
+    // }
     _showToast('Data saved successfully');
     firestoreHandler.closeFirestore();
     return true;

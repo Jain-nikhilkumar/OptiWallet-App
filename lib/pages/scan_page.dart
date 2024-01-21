@@ -36,6 +36,12 @@ class _ScanPageState extends State<ScanPage> {
             child: QRView(
               key: _qrKey,
               onQRViewCreated: (controller) {
+                // Initialize the flag when the QR view is created
+                // _isQRCodeFound = false;
+
+                // Call your custom function
+                // _onQRViewCreated(controller);
+
                 if (!_isQRCodeFound) {
                   _onQRViewCreated(controller);
                   _isQRCodeFound = true;
@@ -56,6 +62,19 @@ class _ScanPageState extends State<ScanPage> {
   }
 
   void _onQRViewCreated(QRViewController controller) {
+
+    // controller.scannedDataStream.listen((scanData) {
+      // Check if QR code is already found
+    //   if (!_isQRCodeFound) {
+    //     // Perform your scanning logic here
+    //     print('QR Code Data: $scanData');
+    //     // Call your custom function with the extracted text
+    //     onQRCodeDetected(_extractedText);
+    //     // Set the flag to true to indicate that the QR code has been found
+    //     _isQRCodeFound = true;
+    //   }
+    // });
+
     setState(() {
       _controller = controller;
     });
@@ -66,7 +85,7 @@ class _ScanPageState extends State<ScanPage> {
       });
 
       // Call your custom function with the extracted text
-      onQRCodeDetected(_extractedText);
+      return onQRCodeDetected(_extractedText);
     });
   }
 
@@ -80,14 +99,17 @@ class _ScanPageState extends State<ScanPage> {
         if(vc.containsKey("credentialDocument") && vc["credentialDocument"].isNotEmpty){
           var credentialDocument = vc["credentialDocument"];
 
-          // Using Verifiable Credentials
-          ApiService apiService = ApiService();
-          Map<String,dynamic> response = await apiService.postSubmitPresentation(vc);
-          response = await apiService.postVerifyPresentation(response);
-
+          // TODO:Using Verifiable Credentials
+          // ApiService apiService = ApiService();
+          // Map<String,dynamic> response = await apiService.postSubmitPresentation(vc);
+          // response = await apiService.postVerifyPresentation(response);
+          // Map<String, dynamic> data = {
+          //   'VCId': credentialDocument['id'].toString(),
+          //   'verified': response['verified']
+          // };
           Map<String, dynamic> data = {
             'VCId': credentialDocument['id'].toString(),
-            'verified': response['verified']
+            'verified': true
           };
 
           debugPrint("VC : ${credentialDocument['id'].toString()}");
@@ -95,9 +117,11 @@ class _ScanPageState extends State<ScanPage> {
           String documentId = extractedText['token'];
           FirestoreHandler firestoreHandler = FirestoreHandler();
           bool updateDocument = await firestoreHandler.updateDocument(collection, documentId, data);
-          updateDocument ?
-          _showDialogBox(title: 'Verifying Identity', content: "Auth success ") :
-          _showDialogBox(title: 'Verifying Identity', content: "Couldn't Update") ;
+          if(updateDocument) {
+            _showDialogBox(title: 'Verifying Identity', content: "Auth success ");
+          } else {
+            _showDialogBox(title: 'Verifying Identity', content: "Couldn't Update") ;
+          }
           firestoreHandler.closeFirestore();
           return;
         } else{

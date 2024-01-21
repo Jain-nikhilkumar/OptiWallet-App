@@ -147,9 +147,9 @@ class _LoginPageState extends State<LoginPage> {
                             backgroundColor: Colors.green,
                             onPressed: _login,
                             // onPressed: () {
-                              // Implement your logic here
-                              // String otpCode = controllers.map((controller) => controller.text).join();
-                              // _verifyOTP(otpCode, context);
+                            // Implement your logic here
+                            // String otpCode = controllers.map((controller) => controller.text).join();
+                            // _verifyOTP(otpCode, context);
                             // },
                             child: const Icon(
                               Icons.arrow_forward,
@@ -178,15 +178,26 @@ class _LoginPageState extends State<LoginPage> {
       User? userCredential = await _authHandler.signInWithEmailAndPassword(email, password);
       if (userCredential != null) {
         // Successfully signed in
+        debugPrint('User logged in: ${userCredential.displayName}');
+        // Set the authentication status to true
+        Provider.of<MyAuthProvider>(context, listen: false).setUser(userCredential);
+        // Navigate to the home screen
+        navigateTo('/home');
+      } else {
+        showDialogBox('Login User', 'login Failed');
+      }
+    } catch (e) {
+      User? userCredential = await _authHandler.signUpWithEmailAndPassword(email, password);
+      if (userCredential != null) {
+        // Successfully signed in
         debugPrint('User signed in: ${userCredential.displayName}');
         // Set the authentication status to true
         Provider.of<MyAuthProvider>(context, listen: false).setUser(userCredential);
         // Navigate to the home screen
         navigateTo('/home');
       } else {
-        showDialogBox('dialogTitle', 'dialogContent');
+        showDialogBox('Login User', 'login Failed');
       }
-    } catch (e) {
       debugPrint('Error in Login $e');
     }
   }
